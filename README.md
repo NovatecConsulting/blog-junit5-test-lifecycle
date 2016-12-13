@@ -2,7 +2,7 @@
 
 When writing or using extensions in JUnit 5 you should know
 exactly how and when they are invoked. Not knowing might
-confuse you in case of unexpected behavior!
+confuse you with unexpected behavior!
 
 Let's start with a simple test class containing two tests
 and all regular lifecycle methods:
@@ -31,7 +31,7 @@ public class JustTests {
 }
 ```
 
-Executing this produces the following output:
+Executing this class produces the following output:
 
 ```
 beforeAll()
@@ -44,9 +44,10 @@ afterEach()
 afterAll()
 ```
 
-This is the same basic lifecycle as it has been since JUnit 4.
+This is the same basic lifecycle as it has been since JUnit 4
+and will server as our baseline.
 
-Now we implement an extension class implementing all available
+Now let's implement an extension class implementing all available
 lifecycle extension points:
 
 - TestInstancePostProcessor
@@ -57,52 +58,9 @@ lifecycle extension points:
 - AfterEachCallback
 - AfterAllCallback
 
-```java
-public class AllExtensionPoints implements TestInstancePostProcessor,
-    BeforeAllCallback, BeforeEachCallback, BeforeTestExecutionCallback,
-    AfterTestExecutionCallback, AfterEachCallback, AfterAllCallback {
-
-    @Override
-    public void postProcessTestInstance(Object testInstance,
-        ExtensionContext context) {
-        log("TestInstancePostProcessor");
-    }
-
-    @Override
-    public void beforeAll(ContainerExtensionContext context) {
-        log("BeforeAllCallback");
-    }
-
-    @Override
-    public void beforeEach(TestExtensionContext context) {
-        log("BeforeEachCallback");
-    }
-
-    @Override
-    public void beforeTestExecution(TestExtensionContext context) {
-        log("BeforeTestExecutionCallback");
-    }
-
-    @Override
-    public void afterTestExecution(TestExtensionContext context) {
-        log("AfterTestExecutionCallback");
-    }
-
-    @Override
-    public void afterEach(TestExtensionContext context) {
-        log("AfterEachCallback");
-    }
-
-    @Override
-    public void afterAll(ContainerExtensionContext context) {
-        log("AfterAllCallback");
-    }
-
-}
-```
-
-When we activate this extension on the test class,
-we get the following output:
+This extension follows the same principle as the test methods by logging
+the extension point's name when executed. When we activate this extension
+on our test class, we get the following output:
 
 ```
 BeforeAllCallback
@@ -127,7 +85,7 @@ afterAll()
 AfterAllCallback
 ```
 
-This is exactly what we would expect from the extension points.
+This is exactly the behaviour I would expect.
 
 It gets a little bit more interesting when we use our extension on a
 single test method, instead of the whole class. When we do this, we
@@ -151,7 +109,7 @@ afterAll()
 As you can see, the static `BeforeAllCallback` and `AfterAllCallback`
 as well as the `TestInstancePostProcessor` extension points are no longer
 executed. Since the extension is only used on a single test method, it
-makes sense that the static callbacks are skipped. Less so for the
+makes sense that the static callbacks are skipped. It makes less sense for the
 instance post processor. As of JUnit `5.0.0-M2` none of this is hinted
 at in the JavaDoc. I'm sure this will be remedied until the final release.
 
